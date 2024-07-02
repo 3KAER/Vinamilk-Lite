@@ -88,12 +88,7 @@ To start the project, you need to install the necessary software and follow the 
 ```
 
 9. Getting started
-
-Login with subscriber/member:
-
-- email: cuongle2001@gmail.com
-- password: User123@
-
+   
 Login with admin:
 
 - email: admin123@gmail.com
