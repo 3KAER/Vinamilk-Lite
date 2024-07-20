@@ -65,6 +65,7 @@ class ProductController extends Controller
         );
     }
 
+
     /**
      * Create a new product.
      *
@@ -198,5 +199,58 @@ class ProductController extends Controller
             [],
             'Product deleted successfully.'
         );
+    }
+
+    public function csvExport()
+    {
+
+        $result = $this->productModel->getMultiple();
+        $result = $result['rows'];
+
+        foreach ($result as &$item) {
+            unset($item['thumbnail']);
+            unset($item['hidden']);
+            unset($item['description']);
+        }
+        unset($item);
+
+        if (empty($result)) {
+            return $this->response->status(500)->json(
+                0,
+                [],
+                'No data available!'
+            );
+        }
+
+        $columns = array_keys($result[0]);
+        header('Content-Type: text/csv; charset=UTF-8');
+        header('Content-Disposition: attachment');
+        header('Pragma: no-cache');
+        header('Expires: 0');
+        $output = fopen('php://output', 'w');
+        if ($output === false) {
+            return $this->response->status(500)->json(
+                0,
+                [],
+                'Failed to open file for writing!'
+            );
+        }
+
+        fwrite($output, "\xEF\xBB\xBF");
+        fputcsv($output, $columns);
+        foreach ($result as $item) {
+
+            if (isset($item['created_at'])) {
+                $item['created_at'] = date('Y-m-d H:i:s', strtotime($item['created_at']));
+            }
+
+
+            $item = array_map(function ($value) {
+                return mb_convert_encoding($value, 'UTF-8', 'auto');
+            }, $item);
+
+            fputcsv($output, $item);
+        }
+        fclose($output);
     }
 }

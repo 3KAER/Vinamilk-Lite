@@ -1,17 +1,20 @@
-import axiosClient from './axiosClient';
+import axiosClient from "./axiosClient";
 
 const productApi = {
-  getProducts(paramString = '') {
+  getProducts(paramString = "") {
     return axiosClient.get(`/products?${paramString}`);
   },
   create(data) {
-    return axiosClient.post('/products', data);
+    return axiosClient.post("/products", data);
   },
   update(id, data) {
     return axiosClient.patch(`/products/${id}`, data);
   },
   delete(id) {
     return axiosClient.delete(`/products/${id}`);
+  },
+  createCsv() {
+    return axiosClient.get(`/products/export`);
   },
 };
 

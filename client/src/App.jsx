@@ -1,5 +1,6 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import {
+  PaymentPage,
   AboutPage,
   AccountPage,
   AddressPage,
@@ -17,7 +18,7 @@ import {
   RegisterPage,
   ResetPasswordPage,
   SearchPage,
-} from './pages/common';
+} from "./pages/common";
 import {
   AdminDashboardPage,
   AdminLoginPage,
@@ -31,8 +32,8 @@ import {
   AdminOptionsPage,
   AdminProfilePage,
   AdminNewsCategoriesPage,
-} from './pages/admin';
-import AdminPage from './pages/admin/AdminPage';
+} from "./pages/admin";
+import AdminPage from "./pages/admin/AdminPage";
 
 function App() {
   return (
@@ -53,6 +54,7 @@ function App() {
           <Route index element={<ProfilePage />} />
           <Route path="orders" element={<OrdersPage />} />
           <Route path="address" element={<AddressPage />} />
+          <Route path="payment" element={<PaymentPage />} />
         </Route>
         <Route path="/search" element={<SearchPage />} />
         <Route path="/admin/login" element={<AdminLoginPage />} />

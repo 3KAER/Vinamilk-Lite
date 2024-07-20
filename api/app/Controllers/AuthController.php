@@ -11,6 +11,7 @@ class AuthController extends Controller
     private $userModel;
     private $accessTokenName = 'access_token';
     private $refreshTokenName = 'refresh_token';
+    private $orderModel;
 
     /**
      * AuthController constructor.
@@ -19,6 +20,7 @@ class AuthController extends Controller
     {
         parent::__construct();
         $this->userModel = $this->model('auth');
+        $this->orderModel = $this->model('OrderItem');
     }
 
     /**
@@ -650,5 +652,27 @@ class AuthController extends Controller
         } catch (Exception $e) {
             return false;
         }
+    }
+    /**
+     * Get products.
+     *
+     * @return  string  The JSON response
+     */
+    public function getOrders()
+    {
+        $id = $GLOBALS["userId"];
+        $orders = $this->orderModel->getByUserId($id);
+
+        if ($orders === false) {
+            return $this->response->status(500)->json([
+                'rows' => [], // Chỉ trả về 'rows' khi lỗi
+                'message' => 'Something went wrong!'
+            ]);
+        }
+        return $this->response->status(200)->json([
+
+            $orders, // Chỉ trả về 'rows'
+
+        ]);
     }
 }

@@ -1,36 +1,41 @@
-import { AdminLayout } from '../../components/layout';
-import { collectionApi, firebaseApi, productApi } from '../../api';
-import { useEffect, useState } from 'react';
-import { Button, ImageSelector, Input, ProductTable } from '../../components/admin';
-import { Loading, SearchBar } from '../../components/admin';
-import { Overlay } from '../../components/common';
-import Swal from 'sweetalert2';
-import CloseIcon from '../../assets/images/close-dark.svg';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
-import ReactPaginate from 'react-paginate';
-import { debounce } from 'lodash';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import { AdminLayout } from "../../components/layout";
+import { collectionApi, firebaseApi, productApi } from "../../api";
+import { useEffect, useState } from "react";
+import {
+  Button,
+  ImageSelector,
+  Input,
+  ProductTable,
+} from "../../components/admin";
+import { Loading, SearchBar } from "../../components/admin";
+import { Overlay } from "../../components/common";
+import Swal from "sweetalert2";
+import CloseIcon from "../../assets/images/close-dark.svg";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import ReactPaginate from "react-paginate";
+import { debounce } from "lodash";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 function AdminProductsPage() {
   const [loading, setLoading] = useState(false);
   const [productRows, setProductRows] = useState([]);
   const [collectionList, setCollectionlist] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [searchValue, setSearchValue] = useState('');
+  const [searchValue, setSearchValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalRows, setTotalRows] = useState(0);
   const [file, setFile] = useState(null);
-  const [description, setDescription] = useState('');
+  const [description, setDescription] = useState("");
   const modules = {
     toolbar: {
       container: [
-        ['bold', 'italic', 'underline', 'strike'],
+        ["bold", "italic", "underline", "strike"],
         [{ header: 2 }],
-        ['blockquote'],
-        ['clean'],
+        ["blockquote"],
+        ["clean"],
       ],
     },
   };
@@ -49,10 +54,11 @@ function AdminProductsPage() {
       setLoading(false);
     } catch (error) {
       setLoading(false);
-      const errorMessage = error.response?.data?.message || 'Something went wrong!';
+      const errorMessage =
+        error.response?.data?.message || "Something went wrong!";
       Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
+        icon: "error",
+        title: "Oops...",
         text: errorMessage,
       });
     }
@@ -60,29 +66,39 @@ function AdminProductsPage() {
 
   const formik = useFormik({
     initialValues: {
-      name: '',
-      slug: '',
-      hidden: '0',
-      price: '',
-      salePrice: '',
-      collectionId: '',
+      name: "",
+      slug: "",
+      hidden: "0",
+      price: "",
+      salePrice: "",
+      collectionId: "",
     },
     validationSchema: Yup.object().shape({
-      name: Yup.string().required('Tên là bắt buộc').max(255, 'Tên có nhiều nhất 255 ký tự'),
+      name: Yup.string()
+        .required("Tên là bắt buộc")
+        .max(255, "Tên có nhiều nhất 255 ký tự"),
       slug: Yup.string()
-        .required('Slug là bắt buộc')
-        .matches(/^[a-zA-Z0-9-]+$/, 'Slug chỉ bao gồm các ký tự a-z, A-Z, 0-9 và dấu gạch ngang')
-        .max(255, 'Slug có nhiều nhất 255 ký tự'),
-      price: Yup.number().integer('Giá phải là số nguyên').min(0, 'Giá không được nhỏ hơn 0'),
+        .required("Slug là bắt buộc")
+        .matches(
+          /^[a-zA-Z0-9-]+$/,
+          "Slug chỉ bao gồm các ký tự a-z, A-Z, 0-9 và dấu gạch ngang"
+        )
+        .max(255, "Slug có nhiều nhất 255 ký tự"),
+      price: Yup.number()
+        .integer("Giá phải là số nguyên")
+        .min(0, "Giá không được nhỏ hơn 0"),
       salePrice: Yup.number()
-        .integer('Giá sale phải là số nguyên')
-        .min(0, 'Giá sale không được nhỏ hơn 0'),
+        .integer("Giá sale phải là số nguyên")
+        .min(0, "Giá sale không được nhỏ hơn 0"),
     }),
     onSubmit: async (values) => {
       setLoading(true);
       let thumbnail = null;
       if (file) {
-        const url = await firebaseApi.upload(file, `products/${Date.now()}_${file.name}`);
+        const url = await firebaseApi.upload(
+          file,
+          `products/${Date.now()}_${file.name}`
+        );
         thumbnail = url;
       }
 
@@ -100,16 +116,17 @@ function AdminProductsPage() {
         setLoading(false);
         mutateProducts();
         Swal.fire({
-          icon: 'success',
-          title: 'Thêm sản phẩm thành công!',
+          icon: "success",
+          title: "Thêm sản phẩm thành công!",
         });
       } catch (error) {
         console.log(error);
         setLoading(false);
-        const errorMessage = error.response?.data?.message || 'Something went wrong!';
+        const errorMessage =
+          error.response?.data?.message || "Something went wrong!";
         Swal.fire({
-          icon: 'error',
-          title: 'Oops...',
+          icon: "error",
+          title: "Oops...",
           text: errorMessage,
         });
       }
@@ -128,10 +145,11 @@ function AdminProductsPage() {
         setLoading(false);
       } catch (error) {
         setLoading(false);
-        const errorMessage = error.response?.data?.message || 'Something went wrong!';
+        const errorMessage =
+          error.response?.data?.message || "Something went wrong!";
         Swal.fire({
-          icon: 'error',
-          title: 'Oops...',
+          icon: "error",
+          title: "Oops...",
           text: errorMessage,
         });
       }
@@ -143,10 +161,29 @@ function AdminProductsPage() {
     window.scrollTo({
       top: 0,
       left: 0,
-      behavior: 'smooth',
+      behavior: "smooth",
     });
   };
 
+  const exportCsv = async () => {
+    try {
+      const response = await productApi.createCsv();
+      const bom = "\uFEFF";
+      const blob = new Blob([bom + response], {
+        type: "text/csv;charset=utf-8;",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "export.csv";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.log("No export");
+    }
+  };
   useEffect(() => {
     mutateProducts();
     return mutateProducts.cancel;
@@ -155,19 +192,26 @@ function AdminProductsPage() {
   return (
     <AdminLayout>
       <div className="container px-5 md:px-4 mb-8 md:mb-5">
-        <div className="my-5 flex items-center space-x-4 sm:flex-col sm:items-start sm:space-x-0 sm:space-y-4">
-          <div className="w-[80px">
-            <Button handleClick={() => setShowAddForm(true)} title="Thêm" />
-          </div>
-          <div className="w-[320px] sm:w-full">
-            <SearchBar
-              placeholder="Tìm theo tên..."
-              value={searchValue}
-              handleChange={(event) => setSearchValue(event.target.value)}
-              handleClear={() => setSearchValue('')}
-            />
+        <div className="my-5 flex items-center justify-between sm:flex-col sm:items-start sm:space-x-0 sm:space-y-4">
+          <div className="flex items-center space-x-4 w-full">
+            <div className="w-[80px]">
+              <Button handleClick={() => setShowAddForm(true)} title="Thêm" />
+            </div>
+
+            <div className="w-[320px] sm:w-full">
+              <SearchBar
+                placeholder="Tìm theo tên..."
+                value={searchValue}
+                handleChange={(event) => setSearchValue(event.target.value)}
+                handleClear={() => setSearchValue("")}
+              />
+            </div>
+            <div className="w-[80px]">
+              <Button handleClick={() => exportCsv(true)} title="Xuất" />
+            </div>
           </div>
         </div>
+
         <div className="overflow-x-auto">
           <ProductTable
             productRows={productRows}
@@ -180,24 +224,26 @@ function AdminProductsPage() {
             Đang hiển thị {productRows.length} trên tổng số {totalRows}
           </p>
           <ReactPaginate
-            activeClassName={'border-none bg-blue-500 text-white'}
-            breakClassName={'text-gray-500'}
-            breakLabel={'...'}
-            containerClassName={'flex items-center'}
-            disabledLinkClassName={'cursor-default'}
-            disabledClassName={'border-none bg-[#e5e5e5] cursor-default text-gray-400'}
+            activeClassName={"border-none bg-blue-500 text-white"}
+            breakClassName={"text-gray-500"}
+            breakLabel={"..."}
+            containerClassName={"flex items-center"}
+            disabledLinkClassName={"cursor-default"}
+            disabledClassName={
+              "border-none bg-[#e5e5e5] cursor-default text-gray-400"
+            }
             marginPagesDisplayed={2}
-            nextClassName={'border border-ghost mx-2 rounded text-gray-900'}
-            nextLabel={'›'}
+            nextClassName={"border border-ghost mx-2 rounded text-gray-900"}
+            nextLabel={"›"}
             onPageChange={handlePageChange}
             pageCount={totalPages}
-            pageClassName={'rounded border border-ghost mx-2 text-gray-900'}
+            pageClassName={"rounded border border-ghost mx-2 text-gray-900"}
             pageRangeDisplayed={3}
-            previousClassName={'border border-ghost mx-2 rounded text-gray-900'}
-            previousLabel={'‹'}
-            previousLinkClassName={'block p-2'}
-            nextLinkClassName={'block p-2'}
-            pageLinkClassName={'block p-2 border rounded'}
+            previousClassName={"border border-ghost mx-2 rounded text-gray-900"}
+            previousLabel={"‹"}
+            previousLinkClassName={"block p-2"}
+            nextLinkClassName={"block p-2"}
+            pageLinkClassName={"block p-2 border rounded"}
           />
         </div>
       </div>
@@ -220,7 +266,9 @@ function AdminProductsPage() {
               onReset={formik.handleReset}
             >
               <div className="mt-4">
-                <label className="block text-gray-700 font-medium mb-2">Tên sản phẩm*</label>
+                <label className="block text-gray-700 font-medium mb-2">
+                  Tên sản phẩm*
+                </label>
                 <Input
                   placeholder="Nhập tên sản phẩm*"
                   value={formik.values.name}
@@ -229,11 +277,15 @@ function AdminProductsPage() {
                   name="name"
                 />
                 {formik.errors.name && formik.touched.name && (
-                  <p className="text-red-600 mt-1 font-inter">{formik.errors.name}</p>
+                  <p className="text-red-600 mt-1 font-inter">
+                    {formik.errors.name}
+                  </p>
                 )}
               </div>
               <div className="mt-4">
-                <label className="block text-gray-700 font-medium mb-2">Slug*</label>
+                <label className="block text-gray-700 font-medium mb-2">
+                  Slug*
+                </label>
                 <Input
                   placeholder="Nhập slug của sản phẩm*"
                   value={formik.values.slug}
@@ -242,17 +294,23 @@ function AdminProductsPage() {
                   name="slug"
                 />
                 {formik.errors.slug && formik.touched.slug && (
-                  <p className="text-red-600 mt-1 font-inter">{formik.errors.slug}</p>
+                  <p className="text-red-600 mt-1 font-inter">
+                    {formik.errors.slug}
+                  </p>
                 )}
               </div>
               <div className="mt-4">
-                <label className="block text-gray-700 font-medium mb-2">Thumbnail sản phẩm</label>
+                <label className="block text-gray-700 font-medium mb-2">
+                  Thumbnail sản phẩm
+                </label>
                 <div className="h-[150px] px-10">
                   <ImageSelector handleSelect={(file) => setFile(file)} />
                 </div>
               </div>
               <div className="mt-4">
-                <label className="block text-gray-700 font-medium mb-2">Giá sản phẩm</label>
+                <label className="block text-gray-700 font-medium mb-2">
+                  Giá sản phẩm
+                </label>
                 <Input
                   placeholder="Nhập giá của sản phẩm"
                   value={formik.values.price}
@@ -261,11 +319,15 @@ function AdminProductsPage() {
                   name="price"
                 />
                 {formik.errors.price && formik.touched.price && (
-                  <p className="text-red-600 mt-1 font-inter">{formik.errors.price}</p>
+                  <p className="text-red-600 mt-1 font-inter">
+                    {formik.errors.price}
+                  </p>
                 )}
               </div>
               <div className="mt-4">
-                <label className="block text-gray-700 font-medium mb-2">Giá khuyến mãi</label>
+                <label className="block text-gray-700 font-medium mb-2">
+                  Giá khuyến mãi
+                </label>
                 <Input
                   placeholder="Nhập giá khuyến mãi của sản phẩm"
                   value={formik.values.salePrice}
@@ -274,21 +336,28 @@ function AdminProductsPage() {
                   name="salePrice"
                 />
                 {formik.errors.salePrice && formik.touched.salePrice && (
-                  <p className="text-red-600 mt-1 font-inter">{formik.errors.salePrice}</p>
+                  <p className="text-red-600 mt-1 font-inter">
+                    {formik.errors.salePrice}
+                  </p>
                 )}
               </div>
               <div className="mt-4">
-                <p className="text-gray-700 font-medium mb-2">Chọn ẩn sản phẩm</p>
+                <p className="text-gray-700 font-medium mb-2">
+                  Chọn ẩn sản phẩm
+                </p>
                 <div className="flex items-center space-x-4">
                   <input
                     id="hiddenTrue"
                     name="hidden"
                     type="radio"
                     value="1"
-                    checked={formik.values.hidden === '1'}
+                    checked={formik.values.hidden === "1"}
                     onChange={formik.handleChange}
                   />
-                  <label htmlFor="hiddenTrue" className="block text-gray-700 font-medium">
+                  <label
+                    htmlFor="hiddenTrue"
+                    className="block text-gray-700 font-medium"
+                  >
                     Có
                   </label>
 
@@ -297,10 +366,13 @@ function AdminProductsPage() {
                     name="hidden"
                     type="radio"
                     value="0"
-                    checked={formik.values.hidden === '0'}
+                    checked={formik.values.hidden === "0"}
                     onChange={formik.handleChange}
                   />
-                  <label htmlFor="hiddenFalse" className="block text-gray-700 font-medium">
+                  <label
+                    htmlFor="hiddenFalse"
+                    className="block text-gray-700 font-medium"
+                  >
                     Không
                   </label>
                 </div>
@@ -316,7 +388,9 @@ function AdminProductsPage() {
                 />
               </div>
               <div className="mt-4">
-                <label className="block text-gray-700 font-medium mb-2">Bộ sưu tập</label>
+                <label className="block text-gray-700 font-medium mb-2">
+                  Bộ sưu tập
+                </label>
                 <select
                   value={formik.values.collectionId}
                   onChange={formik.handleChange}

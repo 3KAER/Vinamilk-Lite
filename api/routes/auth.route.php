@@ -3,6 +3,7 @@
 use App\Controllers\AuthController;
 use App\Middlewares\AuthMiddleware;
 
+
 $authController = new AuthController();
 
 $router->post('/auth/register', function () use ($authController) {
@@ -12,7 +13,9 @@ $router->post('/auth/register', function () use ($authController) {
 $router->post('/auth/resend-otp', function () use ($authController) {
     echo $authController->resendOtp();
 });
-
+$router->get('/auth/orders', function () use ($authController) {
+    echo $authController->getOrders();
+})->addMiddleware(new AuthMiddleware());
 $router->post('/auth/verify-otp', function () use ($authController) {
     echo $authController->verifyOtp();
 });

@@ -1,39 +1,43 @@
-import { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import DefaultAvatar from '../../assets/images/default-avatar.jpg';
-import AccountIcon from '../../assets/images/user-account.svg';
-import DashboardIcon from '../../assets/images/dashboard.svg';
-import OrderIcon from '../../assets/images/order.svg';
-import LogoutIcon from '../../assets/images/logout.svg';
-import LoginIcon from '../../assets/images/user-login.svg';
-import CloseIcon from '../../assets/images/close.svg';
-import ArrowRightIcon from '../../assets/images/arrow-right.svg';
-import ArrowBottomIcon from '../../assets/images/arrow-bottom.svg';
-import RegisterIcon from '../../assets/images/user-register.svg';
-import { useAuth } from '../../hooks';
-import { Overlay, SearchBar, Loading, Cart } from '../../components/common';
-import { useNavigate, Link } from 'react-router-dom';
-import Swal from 'sweetalert2';
-import { optionApi } from '../../api';
+import { useState, useEffect } from "react";
+import PropTypes from "prop-types";
+import DefaultAvatar from "../../assets/images/default-avatar.jpg";
+import AccountIcon from "../../assets/images/user-account.svg";
+import DashboardIcon from "../../assets/images/dashboard.svg";
+import OrderIcon from "../../assets/images/order.svg";
+import LogoutIcon from "../../assets/images/logout.svg";
+import LoginIcon from "../../assets/images/user-login.svg";
+import CloseIcon from "../../assets/images/close.svg";
+import ArrowRightIcon from "../../assets/images/arrow-right.svg";
+import ArrowBottomIcon from "../../assets/images/arrow-bottom.svg";
+import RegisterIcon from "../../assets/images/user-register.svg";
+import { useAuth } from "../../hooks";
+import { Overlay, SearchBar, Loading, Cart } from "../../components/common";
+import { useNavigate, Link } from "react-router-dom";
+import Swal from "sweetalert2";
+import { optionApi } from "../../api";
 
 function Header({ hasTransiton = false }) {
   const [loading, setLoading] = useState(false);
-  const [logo, setLogo] = useState('');
-  const [whiteLogo, setWhiteLogo] = useState('');
+  const [logo, setLogo] = useState("");
+  const [whiteLogo, setWhiteLogo] = useState("");
   const [menu, setMenu] = useState([]);
   const navigate = useNavigate();
   const [searchExpanded, setSearchExpanded] = useState(false);
-  const [searchKeyword, setSearchKeyword] = useState('');
+  const [searchKeyword, setSearchKeyword] = useState("");
   const [menuExpanded, setMenuExpanded] = useState(false);
   const [subMenuExpanded, setSubMenuExpanded] = useState(false);
   const [className, setClassName] = useState(
-    'h-[80px] lg:h-[72px] bg-transparent lg:bg-secondary border-0 lg:border-b text-secondary lg:text-primary'
+    "h-[80px] lg:h-[72px] bg-transparent lg:bg-secondary border-0 lg:border-b text-secondary lg:text-primary"
   );
   const [scrolled, setScrolled] = useState(false);
   const { profile, refresh, logout } = useAuth();
   const [tabVisible, setTabVisible] = useState(false);
-  const handleCheckout = (items) => {
-    console.log('Thanh toán:', items);
+  const handleCheckout = () => {
+    if (profile) {
+      navigate("/account/payment");
+    } else {
+      navigate("/login");
+    }
   };
   const toggleTabVisibility = () => {
     setTabVisible(!tabVisible);
@@ -43,10 +47,11 @@ function Header({ hasTransiton = false }) {
     try {
       await logout();
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Something went wrong!';
+      const errorMessage =
+        error.response?.data?.message || "Something went wrong!";
       Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
+        icon: "error",
+        title: "Oops...",
         text: errorMessage,
       });
     }
@@ -62,16 +67,17 @@ function Header({ hasTransiton = false }) {
         optionArray.forEach((option) => {
           options[option.option_key] = option.option_value;
         });
-        setMenu(JSON.parse(options['header-menu']));
-        setLogo(options['logo']);
-        setWhiteLogo(options['white-logo']);
+        setMenu(JSON.parse(options["header-menu"]));
+        setLogo(options["logo"]);
+        setWhiteLogo(options["white-logo"]);
         setLoading(false);
       } catch (error) {
         setLoading(false);
-        const errorMessage = error.response?.data?.message || 'Something went wrong!';
+        const errorMessage =
+          error.response?.data?.message || "Something went wrong!";
         Swal.fire({
-          icon: 'error',
-          title: 'Oops...',
+          icon: "error",
+          title: "Oops...",
           text: errorMessage,
         });
       }
@@ -82,20 +88,20 @@ function Header({ hasTransiton = false }) {
     const handleScroll = () => {
       if (window.scrollY < 40) {
         setClassName(
-          'h-[80px] lg:h-[72px] bg-transparent lg:bg-secondary border-0 lg:border-b text-secondary lg:text-primary'
+          "h-[80px] lg:h-[72px] bg-transparent lg:bg-secondary border-0 lg:border-b text-secondary lg:text-primary"
         );
         setScrolled(false);
       } else {
-        setClassName('h-[72px] bg-secondary border-b text-primary');
+        setClassName("h-[72px] bg-secondary border-b text-primary");
         setScrolled(true);
       }
     };
 
     if (hasTransiton) {
-      window.addEventListener('scroll', handleScroll);
-      return () => window.removeEventListener('scroll', handleScroll);
+      window.addEventListener("scroll", handleScroll);
+      return () => window.removeEventListener("scroll", handleScroll);
     } else {
-      setClassName('h-[72px] bg-secondary border-b text-primary');
+      setClassName("h-[72px] bg-secondary border-b text-primary");
     }
   }, [hasTransiton]);
 
@@ -112,14 +118,16 @@ function Header({ hasTransiton = false }) {
 
   function handleSearchSubmit() {
     const keyword = searchKeyword.trim();
-    if (keyword === '') return;
+    if (keyword === "") return;
 
-    navigate(`/search?q=${keyword.replace(/\s+/g, '+')}`);
+    navigate(`/search?q=${keyword.replace(/\s+/g, "+")}`);
   }
 
   return (
     <header id="header" className="fixed lg:sticky top-0 left-0 w-full z-30">
-      <div className={`relative flex items-center transition-all border-primary ${className}`}>
+      <div
+        className={`relative flex items-center transition-all border-primary ${className}`}
+      >
         <div className="container-sm px-5 lg:px-4 flex items-center justify-between text-lg font-vs-std transition-all">
           <div className="flex animate-appear-from-left">
             {!menuExpanded ? (
@@ -135,9 +143,27 @@ function Header({ hasTransiton = false }) {
                   className="transition-all"
                 >
                   <title>Menu</title>
-                  <line x1="2.25" y1="6.25" x2="21.75" y2="6.25" strokeWidth="1.5"></line>
-                  <line x1="2.25" y1="11.25" x2="21.75" y2="11.25" strokeWidth="1.5"></line>
-                  <line x1="2.25" y1="16.25" x2="21.75" y2="16.25" strokeWidth="1.5"></line>
+                  <line
+                    x1="2.25"
+                    y1="6.25"
+                    x2="21.75"
+                    y2="6.25"
+                    strokeWidth="1.5"
+                  ></line>
+                  <line
+                    x1="2.25"
+                    y1="11.25"
+                    x2="21.75"
+                    y2="11.25"
+                    strokeWidth="1.5"
+                  ></line>
+                  <line
+                    x1="2.25"
+                    y1="16.25"
+                    x2="21.75"
+                    y2="16.25"
+                    strokeWidth="1.5"
+                  ></line>
                 </svg>
               </div>
             ) : (
@@ -216,7 +242,9 @@ function Header({ hasTransiton = false }) {
               </svg>
             </div>
             <div className="relative flex items-center justify-center w-6 h-6 mx-2 lg:hidden group/item">
-              <Link to={profile?.role === 'admin' ? '/admin/profile' : '/account'}>
+              <Link
+                to={profile?.role === "admin" ? "/admin/profile" : "/account"}
+              >
                 <svg
                   width="24"
                   height="24"
@@ -251,7 +279,7 @@ function Header({ hasTransiton = false }) {
                       <span className="ml-3">Chào, {profile.first_name}</span>
                     </div>
                     <ul className="p-1">
-                      {profile.role === 'admin' ? (
+                      {profile.role === "admin" ? (
                         <li>
                           <Link
                             className="flex items-center p-2 rounded-md hover:bg-tertiary"
@@ -386,10 +414,20 @@ function Header({ hasTransiton = false }) {
                   />
                 </div>
                 <div className="md:flex-1">
-                  <SearchBar handleChange={handleSearchChange} handleSubmit={handleSearchSubmit} />
+                  <SearchBar
+                    handleChange={handleSearchChange}
+                    handleSubmit={handleSearchSubmit}
+                  />
                 </div>
-                <button onClick={() => setSearchExpanded(false)} className="w-8 h-8 md:w-6 md-h-6">
-                  <img className="block w-full h-full object-fill" src={CloseIcon} alt="X" />
+                <button
+                  onClick={() => setSearchExpanded(false)}
+                  className="w-8 h-8 md:w-6 md-h-6"
+                >
+                  <img
+                    className="block w-full h-full object-fill"
+                    src={CloseIcon}
+                    alt="X"
+                  />
                 </button>
               </div>
             </div>
@@ -420,7 +458,10 @@ function Header({ hasTransiton = false }) {
                   className="flex justify-between items-center font-vs-std py-5 px-4"
                 >
                   <span>Tài khoản</span>
-                  <img src={subMenuExpanded ? ArrowBottomIcon : ArrowRightIcon} alt="" />
+                  <img
+                    src={subMenuExpanded ? ArrowBottomIcon : ArrowRightIcon}
+                    alt=""
+                  />
                 </div>
                 {subMenuExpanded && (
                   <>
@@ -433,16 +474,22 @@ function Header({ hasTransiton = false }) {
                               src={profile.avatar || DefaultAvatar}
                               alt="Avatar"
                             />
-                            <span className="ml-3">Chào, {profile.first_name}</span>
+                            <span className="ml-3">
+                              Chào, {profile.first_name}
+                            </span>
                           </div>
                         </li>
-                        {profile.role === 'admin' ? (
+                        {profile.role === "admin" ? (
                           <li className="animate-appear-from-left border-t border-dashed border-vinamilk-blue-light">
                             <Link
                               className="flex items-center font-vs-std pl-6 pr-4 py-4"
                               to="/admin"
                             >
-                              <img className="w-6 h-6 mr-2" src={DashboardIcon} alt="" />
+                              <img
+                                className="w-6 h-6 mr-2"
+                                src={DashboardIcon}
+                                alt=""
+                              />
                               <span>Dashboard</span>
                             </Link>
                           </li>
@@ -453,7 +500,11 @@ function Header({ hasTransiton = false }) {
                                 className="flex items-center font-vs-std pl-6 pr-4 py-4"
                                 to="/account"
                               >
-                                <img className="w-6 h-6 mr-2" src={AccountIcon} alt="" />
+                                <img
+                                  className="w-6 h-6 mr-2"
+                                  src={AccountIcon}
+                                  alt=""
+                                />
                                 <span>Tài khoản</span>
                               </Link>
                             </li>
@@ -462,7 +513,11 @@ function Header({ hasTransiton = false }) {
                                 className="flex items-center font-vs-std pl-6 pr-4 py-4"
                                 to="/account/orders"
                               >
-                                <img className="w-6 h-6 mr-2" src={OrderIcon} alt="" />
+                                <img
+                                  className="w-6 h-6 mr-2"
+                                  src={OrderIcon}
+                                  alt=""
+                                />
                                 <span>Đơn hàng</span>
                               </Link>
                             </li>
@@ -473,7 +528,11 @@ function Header({ hasTransiton = false }) {
                             onClick={handleLogout}
                             className=" cursor-pointer flex items-center font-vs-std pl-6 pr-4 py-4"
                           >
-                            <img className="w-6 h-6 mr-2" src={LogoutIcon} alt="" />
+                            <img
+                              className="w-6 h-6 mr-2"
+                              src={LogoutIcon}
+                              alt=""
+                            />
                             <span>Đăng xuất</span>
                           </div>
                         </li>
@@ -485,7 +544,11 @@ function Header({ hasTransiton = false }) {
                             className="flex items-center font-vs-std pl-6 pr-4 py-4"
                             to="/login"
                           >
-                            <img className="w-6 h-6 mr-2" src={LoginIcon} alt="" />
+                            <img
+                              className="w-6 h-6 mr-2"
+                              src={LoginIcon}
+                              alt=""
+                            />
                             <span>Đăng nhập</span>
                           </Link>
                         </li>
@@ -494,7 +557,11 @@ function Header({ hasTransiton = false }) {
                             className="flex items-center font-vs-std pl-6 pr-4 py-4"
                             to="/register"
                           >
-                            <img className="w-6 h-6 mr-2" src={RegisterIcon} alt="" />
+                            <img
+                              className="w-6 h-6 mr-2"
+                              src={RegisterIcon}
+                              alt=""
+                            />
                             <span>Đăng ký</span>
                           </Link>
                         </li>
@@ -508,7 +575,10 @@ function Header({ hasTransiton = false }) {
         </Overlay>
       )}
       {tabVisible && (
-        <div className="fixed top-0 right-0 bottom-0 left-0 z-50" onClick={toggleTabVisibility}>
+        <div
+          className="fixed top-0 right-0 bottom-0 left-0 z-50"
+          onClick={toggleTabVisibility}
+        >
           <div
             className="fixed top-0 right-0 bottom-0 left-0 bg-black bg-opacity-50"
             onClick={(e) => {
@@ -530,10 +600,13 @@ function Header({ hasTransiton = false }) {
                     X
                   </button>
                 </h3>
-                <Cart handleCheckout={handleCheckout} cartItems={[]} removeFromCart={() => {}} />
+                <Cart onTotal={() => {}} />
                 <div className="flex justify-end">
-                  <button className="bg-[#0213af] text-white px-4 py-2 rounded text-sm">
-                    Xem đơn hàng
+                  <button
+                    className="bg-[#0213af] text-white px-4 py-2 rounded text-sm"
+                    onClick={handleCheckout}
+                  >
+                    Thanh toán
                   </button>
                 </div>
               </div>

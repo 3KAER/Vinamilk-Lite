@@ -1,16 +1,16 @@
-import PropTypes from 'prop-types';
-import DefaultProduct from '../../assets/images/default-product.png';
-import EllipsisIcon from '../../assets/images/ellipsis.svg';
-import { useEffect, useState } from 'react';
-import Swal from 'sweetalert2';
-import { firebaseApi, productApi, productImageApi } from '../../api';
-import { Button, ImageSelector, Input, Loading } from '../admin';
-import { Overlay } from '../../components/common';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
-import CloseIcon from '../../assets/images/close-dark.svg';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import PropTypes from "prop-types";
+import DefaultProduct from "../../assets/images/default-product.png";
+import EllipsisIcon from "../../assets/images/ellipsis.svg";
+import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
+import { firebaseApi, productApi, productImageApi } from "../../api";
+import { Button, ImageSelector, Input, Loading } from "../admin";
+import { Overlay } from "../../components/common";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import CloseIcon from "../../assets/images/close-dark.svg";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 function ProductTable({ productRows, handleMutate, collectionList }) {
   const [loading, setLoading] = useState(false);
@@ -19,45 +19,55 @@ function ProductTable({ productRows, handleMutate, collectionList }) {
   const [productEdit, setProductEdit] = useState(null);
   const [file, setFile] = useState(null);
   const [imageFile, setImageFile] = useState(null);
-  const [description, setDescription] = useState('');
+  const [description, setDescription] = useState("");
   const [productImages, setProductImages] = useState([]);
 
   const modules = {
     toolbar: {
       container: [
-        ['bold', 'italic', 'underline', 'strike'],
+        ["bold", "italic", "underline", "strike"],
         [{ header: 2 }],
-        ['blockquote'],
-        ['clean'],
+        ["blockquote"],
+        ["clean"],
       ],
     },
   };
 
   const formik = useFormik({
     initialValues: {
-      name: '',
-      slug: '',
-      hidden: '0',
-      price: '',
-      salePrice: '',
-      collectionId: '',
+      name: "",
+      slug: "",
+      hidden: "0",
+      price: "",
+      salePrice: "",
+      collectionId: "",
     },
     validationSchema: Yup.object().shape({
-      name: Yup.string().required('Tên là bắt buộc').max(255, 'Tên có nhiều nhất 255 ký tự'),
+      name: Yup.string()
+        .required("Tên là bắt buộc")
+        .max(255, "Tên có nhiều nhất 255 ký tự"),
       slug: Yup.string()
-        .required('Slug là bắt buộc')
-        .matches(/^[a-zA-Z0-9-]+$/, 'Slug chỉ bao gồm các ký tự a-z, A-Z, 0-9 và dấu gạch ngang')
-        .max(255, 'Slug có nhiều nhất 255 ký tự'),
-      price: Yup.number().integer('Giá phải là số nguyên').min(0, 'Giá không được nhỏ hơn 0'),
+        .required("Slug là bắt buộc")
+        .matches(
+          /^[a-zA-Z0-9-]+$/,
+          "Slug chỉ bao gồm các ký tự a-z, A-Z, 0-9 và dấu gạch ngang"
+        )
+        .max(255, "Slug có nhiều nhất 255 ký tự"),
+      price: Yup.number()
+        .integer("Giá phải là số nguyên")
+        .min(0, "Giá không được nhỏ hơn 0"),
       salePrice: Yup.number()
-        .integer('Giá sale phải là số nguyên')
-        .min(0, 'Giá sale không được nhỏ hơn 0'),
+        .integer("Giá sale phải là số nguyên")
+        .min(0, "Giá sale không được nhỏ hơn 0"),
     }),
     onSubmit: async (values) => {
       setLoading(true);
       let thumbnail = null;
       if (file) {
-        const url = await firebaseApi.upload(file, `products/${Date.now()}_${file.name}`);
+        const url = await firebaseApi.upload(
+          file,
+          `products/${Date.now()}_${file.name}`
+        );
         thumbnail = url;
       }
 
@@ -86,15 +96,16 @@ function ProductTable({ productRows, handleMutate, collectionList }) {
         setLoading(false);
         handleMutate();
         Swal.fire({
-          icon: 'success',
-          title: 'Sửa sản phẩm thành công!',
+          icon: "success",
+          title: "Sửa sản phẩm thành công!",
         });
       } catch (error) {
         setLoading(false);
-        const errorMessage = error.response?.data?.message || 'Something went wrong!';
+        const errorMessage =
+          error.response?.data?.message || "Something went wrong!";
         Swal.fire({
-          icon: 'error',
-          title: 'Oops...',
+          icon: "error",
+          title: "Oops...",
           text: errorMessage,
         });
       }
@@ -107,15 +118,18 @@ function ProductTable({ productRows, handleMutate, collectionList }) {
   const mutateProductImages = async () => {
     setLoading(true);
     try {
-      const { data } = await productImageApi.getProductImages(`product_id=${productIdImages}`);
+      const { data } = await productImageApi.getProductImages(
+        `product_id=${productIdImages}`
+      );
       setProductImages(data.rows);
       setLoading(false);
     } catch (error) {
       setLoading(false);
-      const errorMessage = error.response?.data?.message || 'Something went wrong!';
+      const errorMessage =
+        error.response?.data?.message || "Something went wrong!";
       Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
+        icon: "error",
+        title: "Oops...",
         text: errorMessage,
       });
     }
@@ -123,14 +137,14 @@ function ProductTable({ productRows, handleMutate, collectionList }) {
 
   const handleDeleteImage = async (id) => {
     const result = await Swal.fire({
-      title: 'Bạn có chắc chắn muốn xóa ảnh này',
-      text: 'Bạn sẽ không thể hoàn tác lại',
-      icon: 'warning',
+      title: "Bạn có chắc chắn muốn xóa ảnh này",
+      text: "Bạn sẽ không thể hoàn tác lại",
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Ok, xóa đi',
-      cancelButtonText: 'Hủy',
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Ok, xóa đi",
+      cancelButtonText: "Hủy",
     });
     if (result.isConfirmed) {
       setLoading(true);
@@ -140,10 +154,11 @@ function ProductTable({ productRows, handleMutate, collectionList }) {
         setLoading(false);
       } catch (error) {
         setLoading(false);
-        const errorMessage = error.response?.data?.message || 'Something went wrong!';
+        const errorMessage =
+          error.response?.data?.message || "Something went wrong!";
         Swal.fire({
-          icon: 'error',
-          title: 'Oops...',
+          icon: "error",
+          title: "Oops...",
           text: errorMessage,
         });
       }
@@ -153,17 +168,21 @@ function ProductTable({ productRows, handleMutate, collectionList }) {
   const handleSaveImage = async () => {
     setLoading(true);
     try {
-      const url = await firebaseApi.upload(imageFile, `products/${Date.now()}_${imageFile.name}`);
+      const url = await firebaseApi.upload(
+        imageFile,
+        `products/${Date.now()}_${imageFile.name}`
+      );
       await productImageApi.create({ product_id: productIdImages, src: url });
       mutateProductImages();
       setImageFile(null);
       setLoading(false);
     } catch (error) {
       setLoading(false);
-      const errorMessage = error.response?.data?.message || 'Something went wrong!';
+      const errorMessage =
+        error.response?.data?.message || "Something went wrong!";
       Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
+        icon: "error",
+        title: "Oops...",
         text: errorMessage,
       });
     }
@@ -171,14 +190,14 @@ function ProductTable({ productRows, handleMutate, collectionList }) {
 
   const handleDelete = async (id) => {
     const result = await Swal.fire({
-      title: 'Bạn có chắc chắn muốn xóa sản phẩm này',
-      text: 'Bạn sẽ không thể hoàn tác lại',
-      icon: 'warning',
+      title: "Bạn có chắc chắn muốn xóa sản phẩm này",
+      text: "Bạn sẽ không thể hoàn tác lại",
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Ok, xóa đi',
-      cancelButtonText: 'Hủy',
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Ok, xóa đi",
+      cancelButtonText: "Hủy",
     });
     if (result.isConfirmed) {
       setLoading(true);
@@ -188,15 +207,16 @@ function ProductTable({ productRows, handleMutate, collectionList }) {
         handleMutate();
         setLoading(false);
         Swal.fire({
-          icon: 'success',
-          title: 'Thành công',
+          icon: "success",
+          title: "Thành công",
         });
       } catch (error) {
         setLoading(false);
-        const errorMessage = error.response?.data?.message || 'Something went wrong!';
+        const errorMessage =
+          error.response?.data?.message || "Something went wrong!";
         Swal.fire({
-          icon: 'error',
-          title: 'Oops...',
+          icon: "error",
+          title: "Oops...",
           text: errorMessage,
         });
       }
@@ -207,12 +227,12 @@ function ProductTable({ productRows, handleMutate, collectionList }) {
     if (!productEdit) return;
 
     formik.setValues({
-      name: productEdit.name || '',
-      slug: productEdit.slug || '',
-      hidden: productEdit.hidden.toString() || '0',
-      price: productEdit.price || '',
-      salePrice: productEdit.sale_price || '',
-      collectionId: productEdit.collection_id || '',
+      name: productEdit.name || "",
+      slug: productEdit.slug || "",
+      hidden: productEdit.hidden.toString() || "0",
+      price: productEdit.price || "",
+      salePrice: productEdit.sale_price || "",
+      collectionId: productEdit.collection_id || "",
     });
   }, [productEdit]);
 
@@ -222,15 +242,18 @@ function ProductTable({ productRows, handleMutate, collectionList }) {
     (async () => {
       setLoading(true);
       try {
-        const { data } = await productImageApi.getProductImages(`product_id=${productIdImages}`);
+        const { data } = await productImageApi.getProductImages(
+          `product_id=${productIdImages}`
+        );
         setProductImages(data.rows);
         setLoading(false);
       } catch (error) {
         setLoading(false);
-        const errorMessage = error.response?.data?.message || 'Something went wrong!';
+        const errorMessage =
+          error.response?.data?.message || "Something went wrong!";
         Swal.fire({
-          icon: 'error',
-          title: 'Oops...',
+          icon: "error",
+          title: "Oops...",
           text: errorMessage,
         });
       }
@@ -248,23 +271,39 @@ function ProductTable({ productRows, handleMutate, collectionList }) {
       <table className="min-w-full">
         <thead>
           <tr>
-            <th className="bg-gray-50 text-gray-800 py-2 px-3 font-[400] text-nowrap">ID</th>
+            <th className="bg-gray-50 text-gray-800 py-2 px-3 font-[400] text-nowrap">
+              ID
+            </th>
             <th className="bg-gray-50 text-gray-800 py-2 px-3 font-[400] text-nowrap">
               Collection ID
             </th>
-            <th className="bg-gray-50 text-gray-800 py-2 px-3 font-[400] text-nowrap">Tên</th>
-            <th className="bg-gray-50 text-gray-800 py-2 px-3 font-[400] text-nowrap">Slug</th>
-            <th className="bg-gray-50 text-gray-800 py-2 px-3 font-[400] text-nowrap">Thumbnail</th>
-            <th className="bg-gray-50 text-gray-800 py-2 px-3 font-[400] text-nowrap">Ẩn</th>
-            <th className="bg-gray-50 text-gray-800 py-2 px-3 font-[400] text-nowrap">Giá</th>
+            <th className="bg-gray-50 text-gray-800 py-2 px-3 font-[400] text-nowrap">
+              Tên
+            </th>
+            <th className="bg-gray-50 text-gray-800 py-2 px-3 font-[400] text-nowrap">
+              Slug
+            </th>
+            <th className="bg-gray-50 text-gray-800 py-2 px-3 font-[400] text-nowrap">
+              Thumbnail
+            </th>
+            <th className="bg-gray-50 text-gray-800 py-2 px-3 font-[400] text-nowrap">
+              Ẩn
+            </th>
+            <th className="bg-gray-50 text-gray-800 py-2 px-3 font-[400] text-nowrap">
+              Giá
+            </th>
             <th className="bg-gray-50 text-gray-800 py-2 px-3 font-[400] text-nowrap">
               Giá khuyến mãi
             </th>
-            <th className="bg-gray-50 text-gray-800 py-2 px-3 font-[400] text-nowrap">Ngày tạo</th>
+            <th className="bg-gray-50 text-gray-800 py-2 px-3 font-[400] text-nowrap">
+              Ngày tạo
+            </th>
             <th className="bg-gray-50 text-gray-800 py-2 px-3 font-[400] text-nowrap">
               Ngày cập nhật
             </th>
-            <th className="bg-gray-50 text-gray-800 py-2 px-3 font-[400] text-nowrap">Thao tác</th>
+            <th className="bg-gray-50 text-gray-800 py-2 px-3 font-[400] text-nowrap">
+              Thao tác
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -274,13 +313,15 @@ function ProductTable({ productRows, handleMutate, collectionList }) {
                 {product.id}
               </td>
               <td className="py-2 px-3 border-b text-gray-600 border-b-gray-100 whitespace-nowrap">
-                <p className="text-center">{product.collection_id || 'Chưa có'}</p>
+                <p className="text-center">
+                  {product.collection_id || "Chưa có"}
+                </p>
               </td>
               <td className="py-2 px-3 border-b text-gray-600 border-b-gray-100">
                 <p className="line-clamp-2">{product.name}</p>
               </td>
               <td className="py-2 px-3 border-b text-gray-600 border-b-gray-100">
-                {' '}
+                {" "}
                 <p className="line-clamp-2">{product.slug}</p>
               </td>
               <td className="py-2 px-3 border-b text-gray-600 border-b-gray-100">
@@ -291,7 +332,7 @@ function ProductTable({ productRows, handleMutate, collectionList }) {
                 />
               </td>
               <td className="py-2 px-3 border-b text-gray-600 border-b-gray-100">
-                {product.hidden === 0 ? 'Không' : 'Có'}
+                {product.hidden === 0 ? "Không" : "Có"}
               </td>
               <td className="py-2 px-3 border-b text-gray-600 border-b-gray-100 whitespace-nowrap">
                 <p className="text-center"> {product.price || 0}</p>
@@ -309,7 +350,9 @@ function ProductTable({ productRows, handleMutate, collectionList }) {
                 <div className="h-full relative flex justify-center items-center">
                   <div
                     onClick={() =>
-                      setActionsExpandedId((id) => (product.id === id ? null : product.id))
+                      setActionsExpandedId((id) =>
+                        product.id === id ? null : product.id
+                      )
                     }
                     className="p-2 cursor-pointer"
                   >
@@ -374,7 +417,9 @@ function ProductTable({ productRows, handleMutate, collectionList }) {
             <table className="w-full">
               <thead>
                 <tr>
-                  <th className="bg-gray-50 text-gray-800 py-2 px-3 font-[400] text-nowrap">Ảnh</th>
+                  <th className="bg-gray-50 text-gray-800 py-2 px-3 font-[400] text-nowrap">
+                    Ảnh
+                  </th>
                   <th className="bg-gray-50 text-gray-800 py-2 px-3 font-[400] text-nowrap">
                     Thao tác
                   </th>
@@ -385,7 +430,11 @@ function ProductTable({ productRows, handleMutate, collectionList }) {
                   <tr key={image.id}>
                     <td className="py-2 px-3 border-b text-gray-600 border-b-gray-100">
                       <div className="flex justify-center">
-                        <img className="w-20 h-20 object-cover" src={image.src} alt="" />
+                        <img
+                          className="w-20 h-20 object-cover"
+                          src={image.src}
+                          alt=""
+                        />
                       </div>
                     </td>
                     <td className="py-2 px-3 border-b text-gray-600 border-b-gray-100">
@@ -424,7 +473,9 @@ function ProductTable({ productRows, handleMutate, collectionList }) {
               onReset={formik.handleReset}
             >
               <div className="mt-4">
-                <label className="block text-gray-700 font-medium mb-2">Tên sản phẩm*</label>
+                <label className="block text-gray-700 font-medium mb-2">
+                  Tên sản phẩm*
+                </label>
                 <Input
                   placeholder="Nhập tên sản phẩm*"
                   value={formik.values.name}
@@ -433,11 +484,15 @@ function ProductTable({ productRows, handleMutate, collectionList }) {
                   name="name"
                 />
                 {formik.errors.name && formik.touched.name && (
-                  <p className="text-red-600 mt-1 font-inter">{formik.errors.name}</p>
+                  <p className="text-red-600 mt-1 font-inter">
+                    {formik.errors.name}
+                  </p>
                 )}
               </div>
               <div className="mt-4">
-                <label className="block text-gray-700 font-medium mb-2">Slug*</label>
+                <label className="block text-gray-700 font-medium mb-2">
+                  Slug*
+                </label>
                 <Input
                   placeholder="Nhập slug của sản phẩm*"
                   value={formik.values.slug}
@@ -446,20 +501,26 @@ function ProductTable({ productRows, handleMutate, collectionList }) {
                   name="slug"
                 />
                 {formik.errors.slug && formik.touched.slug && (
-                  <p className="text-red-600 mt-1 font-inter">{formik.errors.slug}</p>
+                  <p className="text-red-600 mt-1 font-inter">
+                    {formik.errors.slug}
+                  </p>
                 )}
               </div>
               <div className="mt-4">
-                <label className="block text-gray-700 font-medium mb-2">Thumbnail sản phẩm</label>
+                <label className="block text-gray-700 font-medium mb-2">
+                  Thumbnail sản phẩm
+                </label>
                 <div className="h-[150px] px-10">
                   <ImageSelector
                     handleSelect={(file) => setFile(file)}
-                    initialImage={productEdit?.thumbnail || ''}
+                    initialImage={productEdit?.thumbnail || ""}
                   />
                 </div>
               </div>
               <div className="mt-4">
-                <label className="block text-gray-700 font-medium mb-2">Giá sản phẩm</label>
+                <label className="block text-gray-700 font-medium mb-2">
+                  Giá sản phẩm
+                </label>
                 <Input
                   placeholder="Nhập giá của sản phẩm"
                   value={formik.values.price}
@@ -468,11 +529,15 @@ function ProductTable({ productRows, handleMutate, collectionList }) {
                   name="price"
                 />
                 {formik.errors.price && formik.touched.price && (
-                  <p className="text-red-600 mt-1 font-inter">{formik.errors.price}</p>
+                  <p className="text-red-600 mt-1 font-inter">
+                    {formik.errors.price}
+                  </p>
                 )}
               </div>
               <div className="mt-4">
-                <label className="block text-gray-700 font-medium mb-2">Giá khuyến mãi</label>
+                <label className="block text-gray-700 font-medium mb-2">
+                  Giá khuyến mãi
+                </label>
                 <Input
                   placeholder="Nhập giá khuyến mãi của sản phẩm"
                   value={formik.values.salePrice}
@@ -481,21 +546,28 @@ function ProductTable({ productRows, handleMutate, collectionList }) {
                   name="salePrice"
                 />
                 {formik.errors.salePrice && formik.touched.salePrice && (
-                  <p className="text-red-600 mt-1 font-inter">{formik.errors.salePrice}</p>
+                  <p className="text-red-600 mt-1 font-inter">
+                    {formik.errors.salePrice}
+                  </p>
                 )}
               </div>
               <div className="mt-4">
-                <p className="text-gray-700 font-medium mb-2">Chọn ẩn sản phẩm</p>
+                <p className="text-gray-700 font-medium mb-2">
+                  Chọn ẩn sản phẩm
+                </p>
                 <div className="flex items-center space-x-4">
                   <input
                     id="hiddenTrue"
                     name="hidden"
                     type="radio"
                     value="1"
-                    checked={formik.values.hidden === '1'}
+                    checked={formik.values.hidden === "1"}
                     onChange={formik.handleChange}
                   />
-                  <label htmlFor="hiddenTrue" className="block text-gray-700 font-medium">
+                  <label
+                    htmlFor="hiddenTrue"
+                    className="block text-gray-700 font-medium"
+                  >
                     Có
                   </label>
 
@@ -504,10 +576,13 @@ function ProductTable({ productRows, handleMutate, collectionList }) {
                     name="hidden"
                     type="radio"
                     value="0"
-                    checked={formik.values.hidden === '0'}
+                    checked={formik.values.hidden === "0"}
                     onChange={formik.handleChange}
                   />
-                  <label htmlFor="hiddenFalse" className="block text-gray-700 font-medium">
+                  <label
+                    htmlFor="hiddenFalse"
+                    className="block text-gray-700 font-medium"
+                  >
                     Không
                   </label>
                 </div>
@@ -523,7 +598,9 @@ function ProductTable({ productRows, handleMutate, collectionList }) {
                 />
               </div>
               <div className="mt-4">
-                <label className="block text-gray-700 font-medium mb-2">Bộ sưu tập</label>
+                <label className="block text-gray-700 font-medium mb-2">
+                  Bộ sưu tập
+                </label>
                 <select
                   value={formik.values.collectionId}
                   onChange={formik.handleChange}

@@ -1,61 +1,85 @@
-import { useState, useEffect } from 'react';
-import Cookies from 'js-cookie';
+import { useState, useEffect } from "react";
+import Cookies from "js-cookie";
+import PropTypes from "prop-types";
 
-function Cart() {
+function Cart({ onTotal }) {
   const [cartItems, setCartItems] = useState([]);
 
   useEffect(() => {
-    const cartData = Cookies.get('cart');
-    if (cartData) {
-      try {
-        const parsedCart = JSON.parse(cartData);
-        if (Array.isArray(parsedCart)) {
-          setCartItems(parsedCart);
-        } else {
-          console.error("Dữ liệu trong cookie 'cart' không phải là một mảng JSON hợp lệ");
+    const fetchCartData = async () => {
+      const cartData = Cookies.get("cart");
+      if (cartData) {
+        try {
+          const parsedCart = JSON.parse(cartData);
+          if (Array.isArray(parsedCart)) {
+            setCartItems(parsedCart);
+          } else {
+            console.error(
+              "Dữ liệu trong cookie 'cart' không phải là một mảng JSON hợp lệ"
+            );
+          }
+        } catch (error) {
+          console.error("Lỗi khi phân tích dữ liệu từ cookie 'cart':", error);
         }
-      } catch (error) {
-        console.error("Lỗi khi phân tích dữ liệu từ cookie 'cart':", error);
       }
-    }
+    };
+
+    fetchCartData();
   }, []);
 
   const updateCart = (updatedCart) => {
     setCartItems(updatedCart);
-    Cookies.set('cart', JSON.stringify(updatedCart));
+    Cookies.set("cart", JSON.stringify(updatedCart));
   };
 
   const increaseQuantity = (index) => {
     const updatedCart = [...cartItems];
-    updatedCart[index].quantity += 1;
+    updatedCart[index] = {
+      ...updatedCart[index],
+      quantity: updatedCart[index].quantity + 1,
+    };
     updateCart(updatedCart);
   };
 
   const decreaseQuantity = (index) => {
     const updatedCart = [...cartItems];
     if (updatedCart[index].quantity > 1) {
-      updatedCart[index].quantity -= 1;
+      updatedCart[index] = {
+        ...updatedCart[index],
+        quantity: updatedCart[index].quantity - 1,
+      };
       updateCart(updatedCart);
     }
   };
 
+  const getTotal = () => {
+    const total = cartItems.reduce(
+      (acc, item) => acc + item.sale_price * item.quantity,
+      0
+    );
+    onTotal(total);
+    return total;
+  };
+
   const removeFromCart = (index) => {
-    const updatedCart = [...cartItems];
-    updatedCart.splice(index, 1);
+    const updatedCart = cartItems.filter((_, i) => i !== index);
     updateCart(updatedCart);
   };
 
-  const getTotalPrice = () => {
-    return cartItems.reduce((total, item) => total + item.sale_price * item.quantity, 0);
-  };
-
   return (
-    <div>
+    <div className="text-primary">
       <div className="overflow-auto max-h-[400px] ">
         {cartItems.map((item, index) => (
-          <div key={index} className="flex items-center justify-between border-b-2 py-4">
+          <div
+            key={index}
+            className="flex items-center justify-between border-b-2 py-4"
+          >
             <div className="flex items-center flex-grow-0">
-              <img src={item.thumbnail} alt={item.name} className="w-14 h-14 object-cover mr-2" />
+              <img
+                src={item.thumbnail}
+                alt={item.name}
+                className="w-14 h-14 object-cover mr-2"
+              />
             </div>
             <div className="flex flex-col flex-grow">
               <div>
@@ -67,7 +91,12 @@ function Cart() {
                     onClick={() => decreaseQuantity(index)}
                     className="border border-primary text-primary rounded-full p-1"
                   >
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -81,7 +110,12 @@ function Cart() {
                     onClick={() => increaseQuantity(index)}
                     className="border border-primary text-primary rounded-full p-1"
                   >
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -91,7 +125,10 @@ function Cart() {
                     </svg>
                   </button>
                 </div>
-                <button onClick={() => removeFromCart(index)} className="text-red-500 ml-10">
+                <button
+                  onClick={() => removeFromCart(index)}
+                  className="text-red-500 ml-10"
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 300 300"
@@ -146,7 +183,7 @@ function Cart() {
 
       <div className="flex justify-between font-bold mb-2">
         <span className="text-sm">Tổng tiền hàng</span>
-        <span>{getTotalPrice()}₫</span>
+        <span>{getTotal()}₫</span>
       </div>
       <div className="flex justify-between mb-2">
         <span className="text-sm">Phí vận chuyển</span>
@@ -158,10 +195,14 @@ function Cart() {
       </div>
       <div className="flex justify-between text-blue-500 mb-2">
         <span className="text-sm">Tổng thanh toán</span>
-        <span>{getTotalPrice()}₫</span>
+        <span>{getTotal()}₫</span>
       </div>
     </div>
   );
 }
+
+Cart.propTypes = {
+  onTotal: PropTypes.func.isRequired,
+};
 
 export default Cart;
