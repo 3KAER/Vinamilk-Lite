@@ -43,3 +43,10 @@ $router->patch('/auth/profile', function () use ($authController) {
 $router->patch('/auth/password', function () use ($authController) {
     echo $authController->changePassword();
 })->addMiddleware(new AuthMiddleware(false, true));
+
+$router->patch('/users/address', function () use ($authController) {
+    echo $authController->updateAddress();
+})->addMiddleware(new AuthMiddleware());
+$router->get('/users/current-address', function () use ($authController) {
+    echo $authController->getAddress();
+})->addMiddleware(new AuthMiddleware());

@@ -675,4 +675,37 @@ class AuthController extends Controller
 
         ]);
     }
+
+    public function getAddress()
+    {
+        $userId = $GLOBALS['userId'];
+        $data = $this->userModel->getById($userId);
+        return $this->response->status(200)->json(
+            $data
+        );
+    }
+
+    public function updateAddress()
+    {
+        $id = $GLOBALS['userId'];
+        $addressData = $this->request->body();
+
+        $address = $addressData['ward'] . '-' . $addressData['district'] . '-' . $addressData['province'];
+        $updateData = ['address' => $address, 'updated_at' => date('Y-m-d H:i:s')];
+
+        $result = $this->userModel->update($updateData, $id);
+        if ($result === false) {
+            return $this->response->status(500)->json(
+                0,
+                [],
+                'Something was wrong!'
+            );
+        }
+
+        return $this->response->status(200)->json(
+            1,
+            [],
+            'Address updated successfully.'
+        );
+    }
 }

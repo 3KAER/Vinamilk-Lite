@@ -31,6 +31,12 @@ const authApi = {
   getOrders() {
     return axiosClient.get(`/auth/orders`);
   },
+  updateAddress(data) {
+    return axiosClient.patch(`/users/address`, data);
+  },
+  getAddress() {
+    return axiosClient.patch(`/users/current-address`);
+  },
 };
 
 export default authApi;

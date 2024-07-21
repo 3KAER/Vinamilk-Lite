@@ -1,6 +1,8 @@
 import { AccountLayout } from "../../components/layout";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import Swal from "sweetalert2";
+import { authApi } from "../../api";
 
 function AddressPage() {
   const [provinces, setProvinces] = useState([]);
@@ -46,9 +48,9 @@ function AddressPage() {
   // Handle province change and fetch districts
   const handleProvinceChange = async (event) => {
     const provinceName = event.target.value;
-    const provinceCode = provinceMap[provinceName] || "";
-    setFormValues((prevValues) => ({ ...prevValues, province: provinceCode }));
+    setFormValues((prevValues) => ({ ...prevValues, province: provinceName }));
 
+    const provinceCode = provinceMap[provinceName] || "";
     if (provinceCode) {
       try {
         const response = await axios.get(
@@ -77,9 +79,9 @@ function AddressPage() {
   // Handle district change and fetch wards
   const handleDistrictChange = async (event) => {
     const districtName = event.target.value;
-    const districtCode = districtMap[districtName] || "";
-    setFormValues((prevValues) => ({ ...prevValues, district: districtCode }));
+    setFormValues((prevValues) => ({ ...prevValues, district: districtName }));
 
+    const districtCode = districtMap[districtName] || "";
     if (districtCode) {
       try {
         const response = await axios.get(
@@ -128,12 +130,21 @@ function AddressPage() {
     if (validate()) {
       setIsSubmitting(true);
       try {
-        const response = await axios.post(
-          "https://api.example.com/address",
-          formValues
-        );
+        const data = {
+          name: formValues.name,
+          phone: formValues.phone,
+          address: formValues.address,
+          province: formValues.province,
+          district: formValues.district,
+          ward: formValues.ward,
+        };
+        const response = await authApi.updateAddress(data);
         console.log(response.data);
-        alert("Đăng ký thành công!");
+        Swal.fire({
+          icon: "success",
+          title: "Đăng ký thành công!",
+          text: "Thông tin đã được cập nhật thành công.",
+        });
         setFormValues({
           name: "",
           phone: "",
@@ -144,7 +155,11 @@ function AddressPage() {
         });
       } catch (error) {
         console.error("Có lỗi xảy ra:", error.message);
-        alert("Đăng ký thất bại!");
+        Swal.fire({
+          icon: "error",
+          title: "Đăng ký thất bại!",
+          text: "Đã xảy ra lỗi khi cập nhật thông tin. Vui lòng thử lại.",
+        });
       } finally {
         setIsSubmitting(false);
       }
@@ -154,169 +169,177 @@ function AddressPage() {
   return (
     <AccountLayout>
       <div className="text-primary">
-        <h3 className="py-2 font-vs-std font-semibold text-[2rem] sm:text-[1.7rem] border-b border-primary">
+        <h3 className="py-4 font-vs-std font-semibold text-[2rem] sm:text-[1.7rem] border-b border-primary">
           Đăng ký địa chỉ
         </h3>
-        <form
-          className="bg-cream p-6 rounded-lg shadow-lg max-w-lg mx-auto mt-8"
-          onSubmit={handleSubmit}
-        >
-          <div className="mb-4">
-            <label htmlFor="name" className="block text-gray-700 font-semibold">
-              Họ và tên
-            </label>
-            <input
-              name="name"
-              type="text"
-              value={formValues.name}
-              onChange={handleChange}
-              className="mt-1 p-3 w-full border rounded-lg shadow-sm"
-            />
-            {errors.name && (
-              <div className="text-red-600 text-sm mt-1">{errors.name}</div>
-            )}
+        <form onSubmit={handleSubmit}>
+          <div className="grid grid-cols-3 md:grid-cols-2 gap-6">
+            <div className="mb-6">
+              <label
+                htmlFor="name"
+                className="block text-primary font-medium text-lg mb-2"
+              >
+                Người nhận hàng
+              </label>
+              <input
+                name="name"
+                type="text"
+                value={formValues.name}
+                onChange={handleChange}
+                className={`p-4 w-full border rounded-lg shadow-sm focus:outline-none ${
+                  errors.name ? "border-red-500" : "border-gray-300"
+                }`}
+              />
+              {errors.name && (
+                <div className="text-red-500 text-sm mt-1">{errors.name}</div>
+              )}
+            </div>
+
+            <div className="mb-6">
+              <label
+                htmlFor="phone"
+                className="block text-primary font-medium text-lg mb-2"
+              >
+                Số điện thoại
+              </label>
+              <input
+                name="phone"
+                type="text"
+                value={formValues.phone}
+                onChange={handleChange}
+                className={`p-4 w-full border rounded-lg shadow-sm focus:outline-none ${
+                  errors.phone ? "border-red-500" : "border-gray-300"
+                }`}
+              />
+              {errors.phone && (
+                <div className="text-red-500 text-sm mt-1">{errors.phone}</div>
+              )}
+            </div>
+
+            <div className="mb-6">
+              <label
+                htmlFor="address"
+                className="block text-primary font-medium text-lg mb-2"
+              >
+                Địa chỉ
+              </label>
+              <input
+                name="address"
+                type="text"
+                value={formValues.address}
+                onChange={handleChange}
+                className={`p-4 w-full border rounded-lg shadow-sm focus:outline-none ${
+                  errors.address ? "border-red-500" : "border-gray-300"
+                }`}
+              />
+              {errors.address && (
+                <div className="text-red-500 text-sm mt-1">
+                  {errors.address}
+                </div>
+              )}
+            </div>
+
+            <div className="mb-6">
+              <label
+                htmlFor="province"
+                className="block text-primary font-medium text-lg mb-2"
+              >
+                Tỉnh/Thành phố
+              </label>
+              <select
+                name="province"
+                value={formValues.province}
+                onChange={handleProvinceChange}
+                className={`p-4 w-full border rounded-lg shadow-sm focus:outline-none ${
+                  errors.province ? "border-red-500" : "border-gray-300"
+                }`}
+              >
+                <option value="">Chọn tỉnh/thành phố</option>
+                {provinces.map((province) => (
+                  <option
+                    key={province.province_name}
+                    value={province.province_name}
+                  >
+                    {province.province_name}
+                  </option>
+                ))}
+              </select>
+              {errors.province && (
+                <div className="text-red-500 text-sm mt-1">
+                  {errors.province}
+                </div>
+              )}
+            </div>
+
+            <div className="mb-6">
+              <label
+                htmlFor="district"
+                className="block text-primary font-medium text-lg mb-2"
+              >
+                Quận/Huyện
+              </label>
+              <select
+                name="district"
+                value={formValues.district}
+                onChange={handleDistrictChange}
+                className={`p-4 w-full border rounded-lg shadow-sm focus:outline-none ${
+                  errors.district ? "border-red-500" : "border-gray-300"
+                }`}
+              >
+                <option value="">Chọn quận/huyện</option>
+                {districts.map((district) => (
+                  <option
+                    key={district.district_name}
+                    value={district.district_name}
+                  >
+                    {district.district_name}
+                  </option>
+                ))}
+              </select>
+              {errors.district && (
+                <div className="text-red-500 text-sm mt-1">
+                  {errors.district}
+                </div>
+              )}
+            </div>
+
+            <div className="mb-6">
+              <label
+                htmlFor="ward"
+                className="block text-primary font-medium text-lg mb-2"
+              >
+                Phường/Xã
+              </label>
+              <select
+                name="ward"
+                value={formValues.ward}
+                onChange={handleChange}
+                className={`p-4 w-full border rounded-lg shadow-sm focus:outline-none ${
+                  errors.ward ? "border-red-500" : "border-gray-300"
+                }`}
+              >
+                <option value="">Chọn phường/xã</option>
+                {wards.map((ward) => (
+                  <option key={ward.ward_name} value={ward.ward_name}>
+                    {ward.ward_name}
+                  </option>
+                ))}
+              </select>
+              {errors.ward && (
+                <div className="text-red-500 text-sm mt-1">{errors.ward}</div>
+              )}
+            </div>
           </div>
 
-          <div className="mb-4">
-            <label
-              htmlFor="phone"
-              className="block text-gray-700 font-semibold"
+          <div className="flex justify-end mt-6">
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="bg-primary text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-300 hover:bg-primary-dark disabled:bg-gray-400"
             >
-              Số điện thoại
-            </label>
-            <input
-              name="phone"
-              type="text"
-              value={formValues.phone}
-              onChange={handleChange}
-              className="mt-1 p-3 w-full border rounded-lg shadow-sm"
-            />
-            {errors.phone && (
-              <div className="text-red-600 text-sm mt-1">{errors.phone}</div>
-            )}
+              {isSubmitting ? "Đang xử lý..." : "Đăng ký"}
+            </button>
           </div>
-
-          <div className="mb-4">
-            <label
-              htmlFor="address"
-              className="block text-gray-700 font-semibold"
-            >
-              Địa chỉ
-            </label>
-            <input
-              name="address"
-              type="text"
-              value={formValues.address}
-              onChange={handleChange}
-              className="mt-1 p-3 w-full border rounded-lg shadow-sm"
-            />
-            {errors.address && (
-              <div className="text-red-600 text-sm mt-1">{errors.address}</div>
-            )}
-          </div>
-
-          <div className="mb-4">
-            <label
-              htmlFor="province"
-              className="block text-gray-700 font-semibold"
-            >
-              Tỉnh/Thành phố
-            </label>
-            <select
-              name="province"
-              value={
-                Object.keys(provinceMap).find(
-                  (key) => provinceMap[key] === formValues.province
-                ) || ""
-              }
-              onChange={handleProvinceChange}
-              className="mt-1 p-3 w-full border rounded-lg shadow-sm"
-            >
-              <option value="">Chọn tỉnh/thành phố</option>
-              {provinces.map((province) => (
-                <option
-                  key={province.province_id}
-                  value={province.province_name}
-                >
-                  {province.province_name}
-                </option>
-              ))}
-            </select>
-            {errors.province && (
-              <div className="text-red-600 text-sm mt-1">{errors.province}</div>
-            )}
-          </div>
-
-          <div className="mb-4">
-            <label
-              htmlFor="district"
-              className="block text-gray-700 font-semibold"
-            >
-              Quận/Huyện
-            </label>
-            <select
-              name="district"
-              value={
-                Object.keys(districtMap).find(
-                  (key) => districtMap[key] === formValues.district
-                ) || ""
-              }
-              onChange={handleDistrictChange}
-              className="mt-1 p-3 w-full border rounded-lg shadow-sm"
-            >
-              <option value="">Chọn quận/huyện</option>
-              {districts.map((district) => (
-                <option
-                  key={district.district_id}
-                  value={district.district_name}
-                >
-                  {district.district_name}
-                </option>
-              ))}
-            </select>
-            {errors.district && (
-              <div className="text-red-600 text-sm mt-1">{errors.district}</div>
-            )}
-          </div>
-
-          <div className="mb-4">
-            <label htmlFor="ward" className="block text-gray-700 font-semibold">
-              Phường/Xã
-            </label>
-            <select
-              name="ward"
-              value={
-                Object.keys(wardMap).find(
-                  (key) => wardMap[key] === formValues.ward
-                ) || ""
-              }
-              onChange={(event) =>
-                setFormValues((prevValues) => ({
-                  ...prevValues,
-                  ward: wardMap[event.target.value] || "",
-                }))
-              }
-              className="mt-1 p-3 w-full border rounded-lg shadow-sm"
-            >
-              <option value="">Chọn phường/xã</option>
-              {wards.map((ward) => (
-                <option key={ward.ward_id} value={ward.ward_name}>
-                  {ward.ward_name}
-                </option>
-              ))}
-            </select>
-            {errors.ward && (
-              <div className="text-red-600 text-sm mt-1">{errors.ward}</div>
-            )}
-          </div>
-
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full bg-primary text-white py-2 px-4 rounded-lg font-semibold shadow-md"
-          >
-            {isSubmitting ? "Đang gửi..." : "Gửi"}
-          </button>
         </form>
       </div>
     </AccountLayout>

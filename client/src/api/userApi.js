@@ -1,14 +1,14 @@
-import axiosClient from './axiosClient';
+import axiosClient from "./axiosClient";
 
 const userApi = {
-  getUsers(paramString = '') {
+  getUsers(paramString = "") {
     return axiosClient.get(`/users?${paramString}`);
   },
   getById(id) {
     return axiosClient.get(`/users/${id}`);
   },
   create(data) {
-    return axiosClient.post('/users', data);
+    return axiosClient.post("/users", data);
   },
   update(id, data) {
     return axiosClient.patch(`/users/${id}`, data);

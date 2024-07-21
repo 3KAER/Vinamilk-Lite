@@ -104,10 +104,9 @@ function OrderList({ orderList }) {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h2 className="text-3xl font-bold mb-6">Danh sách đơn hàng</h2>
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-300">
+    <div className="container mx-auto p-4 ">
+      <div className="overflow-x-auto border rounded-lg border-primary">
+        <table className="min-w-full bg-cream ">
           <thead>
             <tr>
               <th className="py-2 px-4 border-b text-left">Mã đơn hàng</th>
@@ -126,7 +125,7 @@ function OrderList({ orderList }) {
                   <td className="py-2 px-4 border-b">
                     <button
                       onClick={() => handleViewDetails(orderId)}
-                      className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+                      className="bg-primary text-white px-4 py-2 rounded hover:bg-primary transition"
                     >
                       Xem chi tiết
                     </button>
