@@ -12,6 +12,7 @@ class AuthController extends Controller
     private $accessTokenName = 'access_token';
     private $refreshTokenName = 'refresh_token';
     private $orderModel;
+    private $addressModel;
 
     /**
      * AuthController constructor.
@@ -21,6 +22,7 @@ class AuthController extends Controller
         parent::__construct();
         $this->userModel = $this->model('auth');
         $this->orderModel = $this->model('OrderItem');
+        $this->addressModel = $this->model('Address');
     }
 
     /**
@@ -687,18 +689,34 @@ class AuthController extends Controller
 
     public function updateAddress()
     {
-        $id = $GLOBALS['userId'];
+        $userId = $GLOBALS['userId'];
         $addressData = $this->request->body();
+        $ward = $addressData['ward'];
+        $district = $addressData['district'];
+        $province = $addressData['province'];
+        $recipient = $addressData['name'];
+        $existingAddress = $this->addressModel->getByUserId($userId);
+        $updateData = [
+            'user_id' => $userId,
+            'ward' => $ward,
+            'district' => $district,
+            'province' => $province,
+            'recipient' => $recipient,
+            'updated_at' => date('Y-m-d H:i:s')
+        ];
 
-        $address = $addressData['ward'] . '-' . $addressData['district'] . '-' . $addressData['province'];
-        $updateData = ['address' => $address, 'updated_at' => date('Y-m-d H:i:s')];
-
-        $result = $this->userModel->update($updateData, $id);
+        if ($existingAddress !== NULL) {
+            $id = $existingAddress[0]['id'];
+            $result = $this->addressModel->update($updateData, $id);
+        } else {
+            $updateData['created_at'] = date('Y-m-d H:i:s');
+            $result = $this->addressModel->create($updateData);
+        }
         if ($result === false) {
             return $this->response->status(500)->json(
                 0,
                 [],
-                'Something was wrong!'
+                'Something went wrong!'
             );
         }
 

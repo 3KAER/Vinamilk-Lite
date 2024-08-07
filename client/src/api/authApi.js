@@ -35,7 +35,7 @@ const authApi = {
     return axiosClient.patch(`/users/address`, data);
   },
   getAddress() {
-    return axiosClient.patch(`/users/current-address`);
+    return axiosClient.get(`/users/current-address`);
   },
 };
 

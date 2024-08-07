@@ -21,7 +21,6 @@ function AddressPage() {
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   // Fetch provinces on component mount
   useEffect(() => {
     const fetchProvinces = async () => {
