@@ -96,7 +96,7 @@ Dự án này được thực hiện như một đồ án cho môn Lập Trình 
 
 <!-- BẮT ĐẦU -->
 
-## Nếu muốn cài đặt vào máy tính để triển khai dự án ở local
+## Cài đặt vào máy tính để triển khai dự án ở local
 
 Để bắt đầu dự án, bạn cần cài đặt các phần mềm cần thiết và làm theo các bước dưới đây.
 
