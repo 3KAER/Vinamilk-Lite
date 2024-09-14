@@ -9,6 +9,8 @@ This is a project to design and build the basic interface and basic features for
 The designs and resources of this project are based on the official Vinamilk website: [ https://new.vinamilk.com.vn/](https://new.vinamilk.com.vn/).
 
 This project was carried out as an assignment for the Web Programming course and does not aim for any commercial purposes.
+## Mô tả chi tiết về dự án bằng tiếng việt
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -117,3 +119,5 @@ Login with admin:
 [React-url]: https://reactjs.org/
 [Tailwind.css]: https://img.shields.io/badge/tailwindcss-0F172A?&logo=tailwindcss
 [Tailwind-url]: https://tailwindcss.com/
+
+
