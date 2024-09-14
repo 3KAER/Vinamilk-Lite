@@ -88,10 +88,11 @@ Dự án này được thực hiện như một bài tập cho khóa học Lập
 
 ### Xây Dựng Bằng
 
-- [![PHP][PHP]][PHP-url]
-- [![MYSQL][mysql]][mysql-url]
-- [![React][React.js]][React-url]
-- [![Tailwind CSS][Tailwind.css]][Tailwind-url]
+[![PHP](https://www.php.net/images/logos/php-power-micro.png)](https://www.php.net/)
+[![MYSQL](https://img.shields.io/badge/mysql-4479A1?style=flat&logo=mysql&logoColor=white)](https://www.mysql.com/)
+[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
+[![Tailwind CSS](https://img.shields.io/badge/tailwindcss-0F172A?&logo=tailwindcss)](https://tailwindcss.com/)
+
 
 <p align="right">(<a href="#readme-top">quay lại đầu trang</a>)</p>
 
