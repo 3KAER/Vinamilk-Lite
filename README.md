@@ -4,11 +4,9 @@
 
 # Về Dự Án
 
-Đây là dự án thiết kế và xây dựng giao diện cơ bản cũng như các tính năng cơ bản cho website của công ty Vinamilk.
+Đây là dự án thiết kế và xây dựng giao diện cơ bản cũng như các tính năng cơ bản lấy cảm hứng từ website của công ty Vinamilk.
 
-Thiết kế và tài nguyên của dự án này dựa trên website chính thức của Vinamilk: [https://new.vinamilk.com.vn/](https://new.vinamilk.com.vn/).
-
-Dự án này được thực hiện như một bài tập cho khóa học Lập Trình Web và không có mục đích thương mại.
+Dự án này được thực hiện như một đồ án cho môn Lập Trình Web và không có mục đích thương mại.
 
 # Mô tả chi tiết về dự án
 
